@@ -1,15 +1,14 @@
-use std::ffi::CStr;
-use std::os::raw::c_char;
+use std::os::raw::c_int;
 
+#[link(name = "git2")]
 extern "C" {
-    static environ: *mut *mut c_char;
+    pub fn git_libgit2_init() -> c_int;
+    pub fn git_libgit2_shutdown() -> c_int;
 }
 
 fn main() {
     unsafe {
-        if !environ.is_null() && !(*environ).is_null() {
-            let var = CStr::from_ptr(*environ);
-            println!("first environment variable: {}", var.to_string_lossy());
-        }
+        git_libgit2_init();
+        git_libgit2_shutdown();
     }
 }
