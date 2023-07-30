@@ -1,21 +1,15 @@
-use std::ffi::CString;
+use std::ffi::CStr;
 use std::os::raw::c_char;
 
 extern "C" {
-    fn strlen(s: *const c_char) -> usize;
+    static environ: *mut *mut c_char;
 }
 
 fn main() {
-    let rust_str = "I'll be back";
-    let null_terminated = CString::new(rust_str).unwrap();
-    let len = unsafe { strlen(null_terminated.as_ptr() as *const i8) };
-    if len == rust_str.len() {
-        println!("The lengths are equal: {}", len);
-    } else {
-        println!(
-            "The lengths are not equal: strlen returned {}, rust_str.len() returned {}",
-            len,
-            rust_str.len()
-        );
+    unsafe {
+        if !environ.is_null() && !(*environ).is_null() {
+            let var = CStr::from_ptr(*environ);
+            println!("first environment variable: {}", var.to_string_lossy());
+        }
     }
 }
